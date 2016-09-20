@@ -29,16 +29,16 @@ socean = 1
 #         set nsimmons=True to use (ignores other values)
 #         kappas: upper ocean diffusivity in Simmons (if used)
 #       fractional change in eddy transport (0.1 = +10%)
-kappav0  = 1e-5
-nbl      = 10
-c0       = kappav0*(nbl+1)/2
-c1       = kappav0*(nbl-1)/pi
+kappav0  = 1.e-5
+nbl      = 10.
+c0       = kappav0*(nbl+1.)/2.
+c1       = kappav0*(nbl-1.)/pi
 c2       = 4.5e-3
-c3       = 2500
+c3       = 2500.
 nsimmons = False
-kappas   = 3e-5
+kappas   = 3.e-5
 kappagm0 = 1.e3*socean
-deddy    = 0
+deddy    = 0.
 
 # if using GCM forcing data, read in now
 if nmodel:
@@ -72,9 +72,9 @@ if nmodel:
 #    qek0 = 33.744e6
     qek0 = 36.82e6
 
-depth  = 5e3
+depth  = 5.e3
 ddrake = 0.8*depth
-dwind  = 0
+dwind  = 0.
 
 # NADW formation, fractional reduction in NADW formation (0.5 = -50%),
 #        temperature range of NADW formation, NADW warming
@@ -90,14 +90,14 @@ if nmodel:
     qn0 = 14.77e6
 
 
-dqn     = 0
+dqn     = 0.
 # NB: 1.5 degrees gets added to the final figures (in matlab script)
 tnadw10 = 4.5
 tnadw20 = 0.5
 if nmodel:
-    tnadw10 = 6
-    tnadw20 = 2
-dtnadw = 0
+    tnadw10 = 6.
+    tnadw20 = 2.
+dtnadw = 0.
 
 # set ndeboer = True for dynamic NADW formation following de Boer (2011)
 ndeboer = False
@@ -110,10 +110,10 @@ ndeboer = False
 #      (in matlab script)
 thetas0 = 19.5
 # NB: do not modify the next line; change dthetas at end of this block
-dthetas = 4
+dthetas = 4.
 theta0 = thetas0 + dthetas + 1.117e-4
 thetas = thetas0
-dthetas = 0
+dthetas = 0.
 
 if nmodel:
 #NOTE: Still wtf?
@@ -126,13 +126,13 @@ if nmodel:
 #    thetas0 = 21.5
     theta0 = 26.5
     thetas = thetas0
-    dthetas = 0
+    dthetas = 0.
 
 surface = nz * (theta0-thetas) / theta0
 
 # length of year, integration time, time step, no steps, output times
-year = 31557600 # NOTE: this is not correct as it is calculated 365.25*24*60*60, should have been 365.2425*24*60*60
-tmax = 1e4*year
+year = 31557600. # NOTE: this is not correct as it is calculated 365.25*24*60*60, should have been 365.2425*24*60*60
+tmax = 1.e4*year
 tmax = 0.5e4*year
 dt   = 0.25e-2*year
 
@@ -151,9 +151,9 @@ ndump = 0
 
 # define anthropogenic forcing time series:
 #   (a) anthropogenic forcing; (b) AMOC collapse
-t1 = tmax - 1000*year
-t2 = t1 + 200*year
-t3 = t1 + 100*year
+t1 = tmax - 1000.*year
+t2 = t1 + 200.*year
+t3 = t1 + 100.*year
 n1 = int(t1/dt)
 n2 = int(t2/dt)
 n3 = int(t3/dt)
@@ -191,12 +191,12 @@ rho0 = 1027
 cp   = 3992
 
 # surface area north of ACC, length and width of ACC
-a  = 2e14
-lx = 2e7
+a  = 2.e14
+lx = 2.e7
 ly = 1.5e6
 
 # adams bashforth parameters
-ab = np.array([(23/12)*dt/a, (16/12)*dt/a, (5/12)*dt/a])
+ab = np.array([(23./12.)*dt/a, (16./12.)*dt/a, (5./12.)*dt/a])
 qtot = np.zeros((nz+1, nt))
 
 # temperature and initial depths fo interfaces
@@ -210,7 +210,7 @@ d[mask] = depth*(index[mask] - surface)/(nz - surface)
 
 
 # minimum upper layer thickness (numerical parameter)
-hmin = 1e-3
+hmin = 1.e-3
 
 # main loop
 qn          = np.zeros(nz)
@@ -239,9 +239,6 @@ heatuptake  = 0
 A = B = C = D = 0
 
 for n in xrange(nstop):
-    if n % 10000 == 0:
-        print n
-
     thetas = thetas0 + dthetas * fanth[n]
     if nmodel:
         thetas = sttin[0] * fsst[n]
@@ -256,13 +253,13 @@ for n in xrange(nstop):
     dmid = 0.5 * (d[:-1] + d[1:])
 
     if nmodel:
-        qn00 = qn0 * famoc[n-1]
-        tnadw1 = tnadw10 + dtnadw*famoc[n-1]
-        tnadw2 = tnadw20 + dtnadw*famoc[n-1]
+        qn00 = qn0 * famoc[n]
+        tnadw1 = tnadw10 + dtnadw*famoc[n]
+        tnadw2 = tnadw20 + dtnadw*famoc[n]
     else:
-        qn00 = qn0 * (1 - dqn*famoc[n-1])
-        tnadw1 = tnadw10 + dtnadw*famoc[n-1]
-        tnadw2 = tnadw20 + dtnadw*famoc[n-1]
+        qn00 = qn0 * (1 - dqn*famoc[n])
+        tnadw1 = tnadw10 + dtnadw*famoc[n]
+        tnadw2 = tnadw20 + dtnadw*famoc[n]
 
         if ndeboer:
             nadwfactor = d[80] ** 2
@@ -289,18 +286,13 @@ for n in xrange(nstop):
     # qek
     qekmask = np.arange(kmin-1, nz-1)[theta[kmin:nz] > thetas - 10]
     if nmodel:
-        qek00 = qek0 * fanth[n-1] * socean
-        qek[kmin-1:nz-1] = qek00 # NOTE: this is not optimal
-        qek[qekmask] = qek00*(thetas - theta[qekmask + 1])/10
+        qek00 = qek0 * fanth[n] * socean
     else:
-        qek00 = qek0*(1 + dwind*fanth[kmin-1:nz-1])
-        qek[kmin-1:nz-1] = qek00 # NOTE: this is not optimal
-        qek[qekmask] = qek00[qekmask-kmin]*(thetas - theta[qekmask + 1])/10
+        qek00 = qek0*(1 + dwind*fanth[n])
+    qek[kmin-1:nz-1] = qek00 # NOTE: this is not optimal
+    qek[qekmask] = qek00*(thetas - theta[qekmask + 1])/10
     qekmask = np.arange(kmin-1, nz-1)[(theta[kmin:nz] <= thetas - 10) & (d[kmin:nz] > ddrake)]
-    if nmodel:
-        qek[qekmask] = qek00*(depth - d[qekmask + 1])/(depth - ddrake)
-    else:
-        qek[qekmask] = qek00[qekmask-kmin]*(depth - d[qekmask + 1])/(depth - ddrake)
+    qek[qekmask] = qek00*(depth - d[qekmask + 1])/(depth - ddrake)
 
     #B += time.time()-Time
     #if n % 50000 == 0:
@@ -308,19 +300,20 @@ for n in xrange(nstop):
     #Time = time.time()
 
     # qeddy
-    kappagm = kappagm0 * (1 + deddy*fanth[n-1])
-    qeddy[kmin-1:nz-1] = kappagm*d[kmin:nz]*(lx/ly)/np.maximum((thetas-theta[kmin:nz])/thetas, 1e-10)
+    kappagm = kappagm0 * (1. + deddy*fanth[n])
+    qeddy[kmin-1:nz-1] = kappagm*d[kmin:nz]*(lx/ly)/np.maximum((thetas-theta[kmin:nz])/thetas, 1.e-10)
     qeddymask = np.arange(kmin-1, nz-1)[d[kmin:nz] > ddrake]
     dmask = qeddymask + 1
     qeddy[qeddymask] *= (depth-d[dmask])/(depth-ddrake)
 
     if nsimmons:
-        kappav[kmin-1:nz] = np.maximum(kappas, 3.85e-7*(dmid[kmin-1:nz] - 3000))
+        kappav[kmin-1:nz] = np.maximum(kappas, 3.85e-7*(dmid[kmin-1:nz] - 3000.))
     else:
         kappav[kmin-1:nz] = c0 + c1 * np.arctan(c2*(dmid[kmin-1:nz] - c3))
 
     qu[kmin-1] = a * (delta*kappav[kmin-1]/h[kmin-1] - kappav[kmin]/h[kmin])
     qu[kmin:nz-1] = a * (kappav[kmin:nz-1]/h[kmin:nz-1] - kappav[kmin+1:nz]/h[kmin+1:nz])
+
     qtot[kmin-1:nz-1, 0] = qek[kmin-1:nz-1] + qu[kmin-1:nz-1] - qn[kmin-1:nz-1] - qeddy[kmin-1:nz-1]
 
     #C += time.time()-Time
@@ -332,7 +325,7 @@ for n in xrange(nstop):
         for k in xrange(kmin, nz):
 
             if k == kmin:
-                print "time:", (n+1)/nstop, "n:", (n+1)
+                print "time:", (n+1.)/nstop, "n:", (n+1)
             print theta[k], d[k], 1e-6*qek[k-1],-1e-6*qeddy[k-1], -1e-6*qn[k-1], 1e-6*qu[k-1], 1e-6*qtot[k-1, 0]
             if k == nz - 1:
                 print "heat flux:", heatuptake/a
