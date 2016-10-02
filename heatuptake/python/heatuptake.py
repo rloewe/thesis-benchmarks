@@ -59,7 +59,7 @@ if nmodel:
 
 # Southern Ocean Ekman transport, Ekman depth, Drake Passage depth,
 #        fractional change in Ekman transport (0.1 = +10%)
-qek0 = 30e6*socean
+qek0 = 30.e6*socean
 
 # Translated from the original code. What have they been smoking?
 if nmodel:
@@ -137,7 +137,7 @@ tmax = 0.5e4*year
 dt   = 0.25e-2*year
 
 if (kappav0 * nbl > 1e-5):
-    dt = dt * 1e-5 / (kappav0 * nbl)
+    dt = dt * 1.e-5 / (kappav0 * nbl)
 if (qek0 < 15e-6):
     dt = 0.1e-2 * year
 if (socean < 0.1):
@@ -162,9 +162,9 @@ famoc = np.zeros(nmax)
 fsst  = np.zeros(nmax)
 if not nmodel:
     fanth[n1:n2-1] = np.sin(0.5 * pi * (np.arange(n1+1, n2)*dt - t1) / (t2 - t1))
-    fanth[n2-1:nstop-1] = 1
+    fanth[n2-1:nstop] = 1
     famoc[n3:n2-1] = np.sin(0.5 * pi * (np.arange(n3+1, n2)*dt - t3) / (t2 - t3)) ** 2
-    famoc[n2-1:nstop-1] = 1
+    famoc[n2-1:nstop] = 1
 else:
     n1 = int((tmax-nf*year)/dt)
     for n in xrange(1, nstop + 1):
@@ -172,9 +172,9 @@ else:
         t3 = (t2 - tmax)/year + nf
         n3 = 1
         if t3+0.5 > nf:
-            fanth[n-1] = 1
-            famoc[n-1] = 1
-            fsst[n-1] = 1
+            fanth[n-1] = 1.
+            famoc[n-1] = 1.
+            fsst[n-1] = 1.
         elif t3+0.5 > nf:
             fanth[n-1] = qekin[nf - 1] / qek0
             famoc[n-1] = qnin[nf - 1] / qn0
@@ -187,8 +187,8 @@ else:
             fsst[n-1] = (t1*sstin[n3] + (1-t1)*sstin[n3 - 1])/sstin[0]
 
 # constants required for heat content
-rho0 = 1027
-cp   = 3992
+rho0 = 1027.
+cp   = 3992.
 
 # surface area north of ACC, length and width of ACC
 a  = 2.e14
@@ -234,11 +234,11 @@ qnout       = np.zeros((nz+1, nout))
 quout       = np.zeros((nz+1, nout))
 qtotout     = np.zeros((nz+1, nout))
 dout        = np.zeros((nz+1, nout))
-heatuptake  = 0
-
-A = B = C = D = 0
+heatuptake  = 0.
 
 for n in xrange(nstop):
+    #if n % 100000 == 0:
+    #    print n
     thetas = thetas0 + dthetas * fanth[n]
     if nmodel:
         thetas = sttin[0] * fsst[n]
@@ -252,52 +252,27 @@ for n in xrange(nstop):
     h = np.maximum(d[1:] - d[:-1], hmin)
     dmid = 0.5 * (d[:-1] + d[1:])
 
+    qn00 = qn0 * (1. - dqn*famoc[n])
+    tnadw1 = tnadw10 + dtnadw*famoc[n]
+    tnadw2 = tnadw20 + dtnadw*famoc[n]
+    if ndeboer:
+        nadwfactor = d[80] ** 2
+        if n <= n1:
+            nadwfactor0 = nadwfactor
+        qn00 = qn0 * nadwfactor / nadwfactor0
     if nmodel:
         qn00 = qn0 * famoc[n]
         tnadw1 = tnadw10 + dtnadw*famoc[n]
         tnadw2 = tnadw20 + dtnadw*famoc[n]
-    else:
-        qn00 = qn0 * (1 - dqn*famoc[n])
-        tnadw1 = tnadw10 + dtnadw*famoc[n]
-        tnadw2 = tnadw20 + dtnadw*famoc[n]
 
-        if ndeboer:
-            nadwfactor = d[80] ** 2
-            if n <= n1:
-                nadwfactor0 = nadwfactor
-            qn00 = qn0 * nadwfactor / nadwfactor0
-
-
-
-    #Time = time.time()
     # qn
+    qn[kmin-1:nz-1] = 0. # NOTE: this is not optimal
+    qnmask = np.arange(kmin-1, nz-1)[(theta[kmin:nz] <= tnadw1) & (theta[kmin:nz] > tnadw2)]
+    thetamask = qnmask + 1
+    qn[qnmask] = qn00 * np.cos(0.5 * pi * ((tnadw1 - theta[thetamask]) / (tnadw1 - tnadw2)))**2
     qnmask = np.arange(kmin-1, nz-1)[(theta[kmin:nz] <= thetas) & (theta[kmin:nz] > tnadw1)]
     thetamask = qnmask + 1
     qn[qnmask] = qn00 * np.sin(0.5 * pi * ((thetas - theta[thetamask]) / (thetas - tnadw1)))
-    qnmask = np.arange(kmin-1, nz-1)[(theta[kmin:nz] <= tnadw1) & (theta[kmin:nz] > tnadw2)]
-    thetamask = qnmask + 1
-    qn[qnmask] = qn00 * np.cos(0.5 * pi * (tnadw1 - theta[thetamask]) / (tnadw1 - tnadw2))**2
-    #A += time.time() - Time
-    #if n % 50000 == 0:
-    #    print "A", A
-
-    #Time = time.time()
-
-    # qek
-    qekmask = np.arange(kmin-1, nz-1)[theta[kmin:nz] > thetas - 10]
-    if nmodel:
-        qek00 = qek0 * fanth[n] * socean
-    else:
-        qek00 = qek0*(1 + dwind*fanth[n])
-    qek[kmin-1:nz-1] = qek00 # NOTE: this is not optimal
-    qek[qekmask] = qek00*(thetas - theta[qekmask + 1])/10
-    qekmask = np.arange(kmin-1, nz-1)[(theta[kmin:nz] <= thetas - 10) & (d[kmin:nz] > ddrake)]
-    qek[qekmask] = qek00*(depth - d[qekmask + 1])/(depth - ddrake)
-
-    #B += time.time()-Time
-    #if n % 50000 == 0:
-    #    print "B", B
-    #Time = time.time()
 
     # qeddy
     kappagm = kappagm0 * (1. + deddy*fanth[n])
@@ -305,6 +280,17 @@ for n in xrange(nstop):
     qeddymask = np.arange(kmin-1, nz-1)[d[kmin:nz] > ddrake]
     dmask = qeddymask + 1
     qeddy[qeddymask] *= (depth-d[dmask])/(depth-ddrake)
+
+    # qek
+    if nmodel:
+        qek00 = qek0 * fanth[n] * socean
+    else:
+        qek00 = qek0*(1 + dwind*fanth[n])
+    qek[kmin-1:nz-1] = qek00 # NOTE: this is not optimal
+    qekmask = np.arange(kmin-1, nz-1)[(d[kmin:nz] > ddrake)]
+    qek[qekmask] = qek00*(depth - d[qekmask + 1])/(depth - ddrake)
+    qekmask = np.arange(kmin-1, nz-1)[theta[kmin:nz] > thetas - 10.]
+    qek[qekmask] = qek00*(thetas - theta[qekmask + 1])/10.
 
     if nsimmons:
         kappav[kmin-1:nz] = np.maximum(kappas, 3.85e-7*(dmid[kmin-1:nz] - 3000.))
@@ -316,17 +302,12 @@ for n in xrange(nstop):
 
     qtot[kmin-1:nz-1, 0] = qek[kmin-1:nz-1] + qu[kmin-1:nz-1] - qn[kmin-1:nz-1] - qeddy[kmin-1:nz-1]
 
-    #C += time.time()-Time
-    #if n % 50000 == 0:
-    #    print "C", C
-
-
     if ((n + 1) <= n1 and (n + 1) % (nstop/10) == 0) or ((n + 1) >= n1 and (n + 1) % (nstop / 50) == 0):
         for k in xrange(kmin, nz):
 
             if k == kmin:
                 print "time:", (n+1.)/nstop, "n:", (n+1)
-            print theta[k], d[k], 1e-6*qek[k-1],-1e-6*qeddy[k-1], -1e-6*qn[k-1], 1e-6*qu[k-1], 1e-6*qtot[k-1, 0]
+            print theta[k], d[k], 1.e-6*qek[k-1],-1.e-6*qeddy[k-1], -1.e-6*qn[k-1], 1.e-6*qu[k-1], 1.e-6*qtot[k-1, 0]
             if k == nz - 1:
                 print "heat flux:", heatuptake/a
 
@@ -335,8 +316,6 @@ for n in xrange(nstop):
     #   subscripts 1-3 refer to >10, 5-10, <5 degrees
     #   (NB: temperature classes hard-wired here for now)
 
-    #Time = time.time()
-
     heatek     = rho0 * cp * dtheta * np.sum(qek[kmin:nz-1])
     heatn      = rho0 * cp * dtheta * np.sum(qn[kmin:nz-1])
     heatu      = rho0 * cp * dtheta * np.sum(qu[kmin:nz-1])
@@ -344,46 +323,81 @@ for n in xrange(nstop):
     heatuptake = rho0 * cp * dtheta * np.sum(qtot[kmin+1:nz, 0])
     heatstart  = rho0 * cp * dtheta * a * d[kmin]
     heat       = heatstart + rho0 * cp * dtheta * a * np.sum(d[kmin+1:nz])
-    heat07     = heatstart + rho0 * cp * dtheta * a * np.sum(np.minimum(d[kmin+1:nz], 700))
-    heat72     = heatstart + rho0 * cp * dtheta * a * np.sum(np.minimum(d[kmin+1:nz], 2000))
+    heat07     = heatstart + rho0 * cp * dtheta * a * np.sum(np.minimum(d[kmin+1:nz], 700.))
+    heat72     = heatstart + rho0 * cp * dtheta * a * np.sum(np.minimum(d[kmin+1:nz], 2000.))
     heat25 = heat - heat72
     heat72 -= heat07
 
     d[kmin:nz] += ab[0]*qtot[kmin-1:nz-1, 0] + ab[1]*qtot[kmin-1:nz-1, 1] + ab[2]*qtot[kmin-1:nz-1, 2]
     d[kmin] = np.max(d[kmin], hmin)
 
-    #D += time.time()-Time
-    #if n % 50000 == 0:
-    #    print "D", D
-
-    if n >= n1 and (n-n1) % ((nstop - n1) / (nout - 1)) == 0:
+    if n >= n1 and (n - n1) % ((nstop - n1) / (nout - 1)) == 0:
         ndump += 1
+        nindex = ndump - 1
         for k in xrange(nz+1):
             if k < kmin or k == nz:
-                qekout[k, ndump]   = 0
-                qeddyout[k, ndump] = 0
-                qnout[k, ndump]    = 0
-                quout[k, ndump]    = 0
-                qtotout[k, ndump]  = 0
-                dout[k, ndump]     = 0
+                qekout[k, nindex]   = 0.
+                qeddyout[k, nindex] = 0.
+                qnout[k, nindex]    = 0.
+                quout[k, nindex]    = 0.
+                qtotout[k, nindex]  = 0.
+                dout[k, nindex]     = 0.
             else:
-                qekout[k, ndump]   = qek[k]*1e-6
-                qeddyout[k, ndump] = qeddy[k]*1e-6
-                qnout[k, ndump]    = qn[k]*1e-6
-                quout[k, ndump]    = qu[k]*1e-6
-                qtotout[k, ndump]  = qtot[k, 0]*1e-6
-                dout[k, ndump]     = d[k]
-            dout[nz, ndump]    = d[nz]
-            heatout[ndump]     = heat
-            heat07out[ndump]   = heat07
-            heat72out[ndump]   = heat72
-            heat25out[ndump]   = heat25
-            heatupout[ndump]   = heatuptake
-            heatekout[ndump]   = heatek
-            heatuout[ndump]    = heatu
-            heatnout[ndump]    = heatn
-            heateddyout[ndump] = heateddy
-            thetasout[ndump]   = thetas
+                qekout[k, nindex]   = qek[k]*1.e-6
+                qeddyout[k, nindex] = qeddy[k]*1.e-6
+                qnout[k, nindex]    = qn[k]*1.e-6
+                quout[k, nindex]    = qu[k]*1.e-6
+                qtotout[k, nindex]  = qtot[k, 0]*1.e-6
+                dout[k, nindex]     = d[k]
+            dout[nz, nindex]    = d[nz]
+            heatout[nindex]     = heat
+            heat07out[nindex]   = heat07
+            heat72out[nindex]   = heat72
+            heat25out[nindex]   = heat25
+            heatupout[nindex]   = heatuptake
+            heatekout[nindex]   = heatek
+            heatuout[nindex]    = heatu
+            heatnout[nindex]    = heatn
+            heateddyout[nindex] = heateddy
+            thetasout[nindex]   = thetas
 
     qtot[kmin-1:nz-1, 2] = qtot[kmin-1:nz-1, 1]
     qtot[kmin-1:nz-1, 1] = qtot[kmin-1:nz-1, 0]
+
+np.savetxt("qek.dat", qekout, delimiter="\n")
+np.savetxt("qeddy.dat", qeddyout, delimiter="\n")
+np.savetxt("qn.dat", qnout, delimiter="\n")
+np.savetxt("qu.dat", quout, delimiter="\n")
+np.savetxt("qtot.dat", qtotout, delimiter="\n")
+np.savetxt("d.dat", dout, delimiter="\n")
+np.savetxt("heat.dat", heatout, delimiter="\n")
+np.savetxt("heat07.dat", heat07out, delimiter="\n")
+np.savetxt("heat72.dat", heat72out, delimiter="\n")
+np.savetxt("heat25.dat", heat25out, delimiter="\n")
+
+heatupout[0] = heatupout[1]
+heatupout[nout+1] = heatupout[nout]
+heatupwrite = 0.25*(2.*heatupout[1:ndump] + heatupout[2:ndump+1] + heatupout[:ndump-1])/a
+np.savetxt("heatup.dat", heatupwrite, delimiter="\n")
+
+heatekout[0] = heatekout[1]
+heatekout[nout+1] = heatekout[nout]
+heatekwrite = 0.25*(2.*heatekout[1:ndump+1] + heatekout[2:ndump+2] + heatekout[:ndump])/a
+np.savetxt("heatek.dat", heatekwrite, delimiter="\n")
+
+heatuout[0] = heatuout[1]
+heatuout[nout+1] = heatuout[nout]
+heatuwrite = 0.25*(2.*heatuout[1:ndump+1] + heatuout[2:ndump+2] + heatuout[:ndump])/a
+np.savetxt("heatu.dat", heatuwrite, delimiter="\n")
+
+heateddyout[0] = heateddyout[1]
+heateddyout[nout+1] = heateddyout[nout]
+heateddywrite = 0.25*(2.*heateddyout[1:ndump+1] + heateddyout[2:ndump+2] + heateddyout[:ndump])/a
+np.savetxt("heateddy.dat", heateddywrite, delimiter="\n")
+
+heatnout[0] = heatnout[1]
+heatnout[nout+1] = heatnout[nout]
+heatnwrite = 0.25*(2.*heatnout[1:ndump+1] + heatnout[2:ndump+2] + heatnout[:ndump])/a
+np.savetxt("heatn.dat", heatnwrite, delimiter="\n")
+
+np.savetxt("thetas.dat", thetasout, delimiter="\n")
