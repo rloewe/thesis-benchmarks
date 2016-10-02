@@ -396,6 +396,7 @@ c     step forward
         enddo
 c   
         if (n.ge.n1.and.mod(n-n1,(nstop-n1)/(nout-1)).eq.0) then
+          print *, n
 c
 c         save data 
             ndump=ndump+1 

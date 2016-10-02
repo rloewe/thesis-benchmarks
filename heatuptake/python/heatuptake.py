@@ -163,7 +163,7 @@ fsst  = np.zeros(nmax)
 if not nmodel:
     fanth[n1:n2-1] = np.sin(0.5 * pi * (np.arange(n1+1, n2)*dt - t1) / (t2 - t1))
     fanth[n2-1:nstop] = 1
-    famoc[n3:n2-1] = np.sin(0.5 * pi * (np.arange(n3+1, n2)*dt - t3) / (t2 - t3)) ** 2
+    famoc[n3+1:n2-1] = np.sin(0.5 * pi * (np.arange(n3+2, n2)*dt - t3) / (t2 - t3)) ** 2
     famoc[n2-1:nstop] = 1
 else:
     n1 = int((tmax-nf*year)/dt)
@@ -320,7 +320,7 @@ for n in xrange(nstop):
     heatn      = rho0 * cp * dtheta * np.sum(qn[kmin:nz-1])
     heatu      = rho0 * cp * dtheta * np.sum(qu[kmin:nz-1])
     heateddy   = rho0 * cp * dtheta * np.sum(qeddy[kmin:nz-1])
-    heatuptake = rho0 * cp * dtheta * np.sum(qtot[kmin+1:nz, 0])
+    heatuptake = rho0 * cp * dtheta * np.sum(qtot[kmin:nz-1, 0])
     heatstart  = rho0 * cp * dtheta * a * d[kmin]
     heat       = heatstart + rho0 * cp * dtheta * a * np.sum(d[kmin+1:nz])
     heat07     = heatstart + rho0 * cp * dtheta * a * np.sum(np.minimum(d[kmin+1:nz], 700.))
@@ -331,7 +331,7 @@ for n in xrange(nstop):
     d[kmin:nz] += ab[0]*qtot[kmin-1:nz-1, 0] + ab[1]*qtot[kmin-1:nz-1, 1] + ab[2]*qtot[kmin-1:nz-1, 2]
     d[kmin] = np.max(d[kmin], hmin)
 
-    if n >= n1 and (n - n1) % ((nstop - n1) / (nout - 1)) == 0:
+    if n >= n1 and (n - n1) % ((nstop - n1 - 1) / (nout - 1)) == 0:
         ndump += 1
         nindex = ndump - 1
         for k in xrange(nz+1):
@@ -343,11 +343,11 @@ for n in xrange(nstop):
                 qtotout[k, nindex]  = 0.
                 dout[k, nindex]     = 0.
             else:
-                qekout[k, nindex]   = qek[k]*1.e-6
-                qeddyout[k, nindex] = qeddy[k]*1.e-6
-                qnout[k, nindex]    = qn[k]*1.e-6
-                quout[k, nindex]    = qu[k]*1.e-6
-                qtotout[k, nindex]  = qtot[k, 0]*1.e-6
+                qekout[k, nindex]   = qek[k-1]*1.e-6
+                qeddyout[k, nindex] = qeddy[k-1]*1.e-6
+                qnout[k, nindex]    = qn[k-1]*1.e-6
+                quout[k, nindex]    = qu[k-1]*1.e-6
+                qtotout[k, nindex]  = qtot[k-1, 0]*1.e-6
                 dout[k, nindex]     = d[k]
             dout[nz, nindex]    = d[nz]
             heatout[nindex]     = heat
