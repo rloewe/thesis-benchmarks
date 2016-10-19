@@ -197,7 +197,7 @@ ly = 1.5e6
 
 # adams bashforth parameters
 ab = np.array([(23./12.)*dt/a, (16./12.)*dt/a, (5./12.)*dt/a])
-qtot = np.zeros((nz+1, nt))
+qtot = np.zeros((nz, nt))
 
 # temperature and initial depths fo interfaces
 theta = theta0 * np.arange(nz, -1, -1) / nz
