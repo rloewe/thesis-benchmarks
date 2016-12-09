@@ -34,7 +34,7 @@ with timer:
     np.flush()
     drho2dT = nonlinear_eq2.nonlin2_eq_of_state_drhodT(Ti,P)
     np.flush()
-    #drho2dS.fill(nonlinear_eq2.nonlin2_eq_of_state_drhodS())
+    drho2dS.fill(nonlinear_eq2.nonlin2_eq_of_state_drhodS())
     np.flush()
     drho2dP = nonlinear_eq2.nonlin2_eq_of_state_drhodP(Ti)
     np.flush()
