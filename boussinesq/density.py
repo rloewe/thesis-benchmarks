@@ -6,9 +6,9 @@ try:     # try to load module with netcdf bindings
 except ImportError:
     from Scientific.IO.NetCDF import NetCDFFile as NF
 
-nx=40
-ny=40
-nz=40
+nx=200
+ny=200
+nz=200
 
 T = numpy.zeros(nx)
 S = numpy.zeros(ny)
