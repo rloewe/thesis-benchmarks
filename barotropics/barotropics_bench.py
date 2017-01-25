@@ -19,7 +19,8 @@ class simulation(PyOM):
      """set main parameter
      """
 
-     (self.nx,self.ny,self.nz)    = (30,42,15)
+     (self.nx,self.ny,self.nz)    = (100,100,100)
+     #(self.nx,self.ny,self.nz)    = (30,42,15)
      self.dt_mom    = 4800  
      self.dt_tracer = 86400/2.0
 
@@ -276,8 +277,10 @@ class simulation(PyOM):
        self.hur[...] = np.random.random_sample(self.hur.shape)
        self.hvr[...] = np.random.random_sample(self.hvr.shape)
 
-baroTimer = climate.Timer("barotropics")
-with baroTimer:
-    a = simulation()
-    a.randomSetup()
-    solve_stream.solve_streamfunction(a, True)
+a = simulation()
+a.randomSetup()
+b = climate.Timer("solve_stream")
+with b:
+    for i in range(100):
+        solve_stream.solve_streamfunction(a, True)
+b.printTime()

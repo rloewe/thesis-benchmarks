@@ -240,75 +240,76 @@ class simulation(PyOM):
        return
 
 baroTimer = climate.Timer("barotropics")
+a = simulation()
+"""
+ allocate everything
+"""
+#print "set parameter"
+a.set_parameter()
+#print "set parameter end"
+#if climate.is_bohrium:
+#    np.flush()
+#print "allocate"
+a.allocate()
+#print "allocate end"
+#if climate.is_bohrium:
+#    np.flush()
+
+"""
+  Grid
+"""
+#print "set grid"
+a.set_grid()
+#print "done"
+#if climate.is_bohrium:
+#    np.flush()
+#print "calc grid"
+numerics.calc_grid(a)
+#print "done"
+#if climate.is_bohrium:
+#    np.flush()
+
+"""
+ Coriolis
+"""
+#print "set coriolis"
+a.set_coriolis()
+#print "done"
+#if climate.is_bohrium:
+#    np.flush()
+#print "calc beta"
+numerics.calc_beta(a)
+#print "done"
+#if climate.is_bohrium:
+#    np.flush()
+
+"""
+ topography
+"""
+#print "set topo"
+a.set_topography()
+#print "done"
+
+#if climate.is_bohrium:
+#    np.flush()
+#print "calc topo"
+numerics.calc_topo(a)
+#print "done"
+#if climate.is_bohrium:
+#    np.flush()
+
+a.set_initial_conditions()
+numerics.calc_initial_conditions(a)
+
+#print "solve init"
+solve_stream.streamfunction_init(a)
+#print "done solve init"
+#if climate.is_bohrium:
+#    np.flush()
+#print "solve stream"
 with baroTimer:
-    a = simulation()
-    """
-     allocate everything
-    """
-    #print "set parameter"
-    a.set_parameter()
-    #print "set parameter end"
-    #if climate.is_bohrium:
-    #    np.flush()
-    #print "allocate"
-    a.allocate()
-    #print "allocate end"
-    #if climate.is_bohrium:
-    #    np.flush()
-
-    """
-      Grid
-    """
-    #print "set grid"
-    a.set_grid()
-    #print "done"
-    #if climate.is_bohrium:
-    #    np.flush()
-    #print "calc grid"
-    numerics.calc_grid(a)
-    #print "done"
-    #if climate.is_bohrium:
-    #    np.flush()
-
-    """
-     Coriolis
-    """
-    #print "set coriolis"
-    a.set_coriolis()
-    #print "done"
-    #if climate.is_bohrium:
-    #    np.flush()
-    #print "calc beta"
-    numerics.calc_beta(a)
-    #print "done"
-    #if climate.is_bohrium:
-    #    np.flush()
-
-    """
-     topography
-    """
-    #print "set topo"
-    a.set_topography()
-    #print "done"
-
-    #if climate.is_bohrium:
-    #    np.flush()
-    #print "calc topo"
-    numerics.calc_topo(a)
-    #print "done"
-    #if climate.is_bohrium:
-    #    np.flush()
-
-    a.set_initial_conditions()
-    numerics.calc_initial_conditions(a)
-
-    #print "solve init"
-    solve_stream.streamfunction_init(a)
-    #print "done solve init"
-    #if climate.is_bohrium:
-    #    np.flush()
-    #print "solve stream"
     solve_stream.solve_streamfunction(a)
     #print "done solve stream"
     #if climate.is_bohrium:
     #    np.flush()
+baroTimer.printTime()
