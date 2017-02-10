@@ -16,9 +16,9 @@ S = 33+4.*np.arange(ny)/ny
 P = 5000*np.arange(nz)/nz
 drho2dS = np.empty((nx, ny, nz))
 
-Sj = np.ones(ny)*S[np.newaxis, :].T*np.ones(ny)[np.newaxis, np.newaxis, :].T
-Ti = np.ones(ny)*np.ones(ny)[np.newaxis, :].T*T[np.newaxis, np.newaxis, :].T
-Pk = P*np.ones(ny)[np.newaxis, :].T*np.ones(ny)[np.newaxis, np.newaxis, :].T
+Sj = np.ones(nz)*S[np.newaxis, :].T*np.ones(nx)[np.newaxis, np.newaxis, :].T
+Ti = np.ones(nz)*np.ones(ny)[np.newaxis, :].T*T[np.newaxis, np.newaxis, :].T
+Pk = P*np.ones(nz)[np.newaxis, :].T*np.ones(nx)[np.newaxis, np.newaxis, :].T
 
 timer = Timer("total")
 with timer:
@@ -61,31 +61,31 @@ timer.printTime()
 #    print "S"
 #if not (np.abs(f.variables["P"] - P) < 1e-5).all() or not f.variables["P"][:].shape == P.shape:
 #    print "P"
-#if not (np.abs(f.variables["rho3"][:].T - rho3) < 1e-3).all() or not f.variables["rho3"][:].shape == rho3.shape:
+#if not (np.abs(f.variables["rho3"][:].T - rho3) < 1e-3).all() or not f.variables["rho3"][:].T.shape == rho3.shape:
 #    print "rho3"
-#if not (np.abs(f.variables["rho2"][:].T - rho2) < 1e-4).all() or not f.variables["rho2"][:].shape == rho2.shape:
+#if not (np.abs(f.variables["rho2"][:].T - rho2) < 1e-4).all() or not f.variables["rho2"][:].T.shape == rho2.shape:
 #    print "rho2"
-#if not (np.abs(f.variables["drho3dT"][:].T - drho3dT) < 1e-4).all() or not f.variables["drho3dT"][:].shape == drho3dT.shape:
+#if not (np.abs(f.variables["drho3dT"][:].T - drho3dT) < 1e-4).all() or not f.variables["drho3dT"][:].T.shape == drho3dT.shape:
 #    print "drho3dT"
-#if not (np.abs(f.variables["drho2dT"][:].T - drho2dT) < 1e-4).all() or not f.variables["drho2dT"][:].shape == drho2dT.shape:
+#if not (np.abs(f.variables["drho2dT"][:].T - drho2dT) < 1e-4).all() or not f.variables["drho2dT"][:].T.shape == drho2dT.shape:
 #    print "drho2dT"
-#if not (np.abs(f.variables["drho3dS"][:].T - drho3dS) < 1e-4).all() or not f.variables["drho3dS"][:].shape == drho3dS.shape:
+#if not (np.abs(f.variables["drho3dS"][:].T - drho3dS) < 1e-4).all() or not f.variables["drho3dS"][:].T.shape == drho3dS.shape:
 #    print "drho3dS"
-#if not (np.abs(f.variables["drho2dS"][:].T - drho2dS) < 1e-5).all() or not f.variables["drho2dS"][:].shape == drho2dS.shape:
+#if not (np.abs(f.variables["drho2dS"][:].T - drho2dS) < 1e-5).all() or not f.variables["drho2dS"][:].T.shape == drho2dS.shape:
 #    print "drho2dS"
-#if not (np.abs(f.variables["drho3dP"][:].T - drho3dP) < 1e-5).all() or not f.variables["drho3dP"][:].shape == drho3dP.shape:
+#if not (np.abs(f.variables["drho3dP"][:].T - drho3dP) < 1e-5).all() or not f.variables["drho3dP"][:].T.shape == drho3dP.shape:
 #    print "drho3dP"
-#if not (np.abs(f.variables["drho2dP"][:].T - drho2dP) < 1e-5).all() or not f.variables["drho2dP"][:].shape == drho2dP.shape:
+#if not (np.abs(f.variables["drho2dP"][:].T - drho2dP) < 1e-5).all() or not f.variables["drho2dP"][:].T.shape == drho2dP.shape:
 #    print "drho2dP"
-#if not (np.abs(f.variables["Hd3"][:].T - Hd3) < 1e-3).all() or not f.variables["Hd3"][:].shape == Hd3.shape:
+#if not (np.abs(f.variables["Hd3"][:].T - Hd3) < 1e-3).all() or not f.variables["Hd3"][:].T.shape == Hd3.shape:
 #    print "Hd3"
-#if not (np.abs(f.variables["Hd2"][:].T - Hd2) < 1e-3).all() or not f.variables["Hd2"][:].shape == Hd2.shape:
+#if not (np.abs(f.variables["Hd2"][:].T - Hd2) < 1e-3).all() or not f.variables["Hd2"][:].T.shape == Hd2.shape:
 #    print "Hd2"
-#if not (np.abs(f.variables["dHd3dT"][:].T - dHd3dT) < 1e-4).all() or not f.variables["dHd3dT"][:].shape == dHd3dT.shape:
+#if not (np.abs(f.variables["dHd3dT"][:].T - dHd3dT) < 1e-4).all() or not f.variables["dHd3dT"][:].T.shape == dHd3dT.shape:
 #    print "dHd3dT"
-#if not (np.abs(f.variables["dHd3dS"][:].T - dHd3dS) < 1e-4).all() or not f.variables["dHd3dS"][:].shape == dHd3dS.shape:
+#if not (np.abs(f.variables["dHd3dS"][:].T - dHd3dS) < 1e-4).all() or not f.variables["dHd3dS"][:].T.shape == dHd3dS.shape:
 #    print "dHd3dS"
-#if not (np.abs(f.variables["dHd2dT"][:].T - dHd2dT) < 1e-4).all() or not f.variables["dHd2dT"][:].shape == dHd2dT.shape:
+#if not (np.abs(f.variables["dHd2dT"][:].T - dHd2dT) < 1e-4).all() or not f.variables["dHd2dT"][:].T.shape == dHd2dT.shape:
 #    print "dHd2dT"
-#if not (np.abs(f.variables["dHd2dS"][:].T - dHd2dS) < 1e-4).all() or not f.variables["dHd2dS"][:].shape == dHd2dS.shape:
+#if not (np.abs(f.variables["dHd2dS"][:].T - dHd2dS) < 1e-4).all() or not f.variables["dHd2dS"][:].T.shape == dHd2dS.shape:
 #    print "dHd2dS"
