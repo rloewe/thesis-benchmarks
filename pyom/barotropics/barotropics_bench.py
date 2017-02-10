@@ -245,9 +245,11 @@ class simulation(PyOM):
        self.allocate()
 
        self.nisle = 2
-       max_boundary= 250
-       self.boundary = np.zeros((self.nisle, max_boundary, 2), dtype=np.int)
-       self.line_dir = np.zeros((self.nisle, max_boundary, 2))
+       self.boundary_mask = np.zeros((self.nisle, self.nx+4, self.ny+4)).astype(np.bool)
+       self.line_dir_north_mask = np.zeros((self.nisle, self.nx+4, self.ny+4)).astype(np.bool)
+       self.line_dir_south_mask = np.zeros((self.nisle, self.nx+4, self.ny+4)).astype(np.bool)
+       self.line_dir_east_mask = np.zeros((self.nisle, self.nx+4, self.ny+4)).astype(np.bool)
+       self.line_dir_west_mask = np.zeros((self.nisle, self.nx+4, self.ny+4)).astype(np.bool)
        self.nr_boundary = np.array([90,32], dtype=np.int)
        self.psin = np.zeros((self.nx+4, self.ny+4, self.nisle))
        self.dpsin = np.zeros((self.nisle, 3))
