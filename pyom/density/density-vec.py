@@ -1,5 +1,6 @@
 from climate.pyom.density import gsw, linear_eq, nonlinear_eq1, nonlinear_eq2, nonlinear_eq3
 from climate import Timer
+import climate
 import numpy as np
 
 #try:     # try to load module with netcdf bindings
@@ -23,33 +24,47 @@ Pk = P*np.ones(nz)[np.newaxis, :].T*np.ones(nx)[np.newaxis, np.newaxis, :].T
 timer = Timer("total")
 with timer:
     rho3 = gsw.gsw_rho(Sj, Ti, P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     rho2 = nonlinear_eq2.nonlin2_eq_of_state_rho(Sj, Ti, P)
-    np.flush()
+    if climate.is_bohrium:
+         np.flush()
     drho3dT = gsw.gsw_drhodT(Sj,Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     drho3dS = gsw.gsw_drhodS(Sj,Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     drho3dP = gsw.gsw_drhodP(Sj,Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     drho2dT = nonlinear_eq2.nonlin2_eq_of_state_drhodT(Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     drho2dS[...] = nonlinear_eq2.nonlin2_eq_of_state_drhodS()
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     drho2dP = nonlinear_eq2.nonlin2_eq_of_state_drhodP(Ti)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     Hd3 = gsw.gsw_dyn_enthalpy(Sj,Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     Hd2 = nonlinear_eq2.nonlin2_eq_of_state_dyn_enthalpy(Sj,Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     dHd3dT = gsw.gsw_dHdT(Sj,Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     dHd3dS = gsw.gsw_dHdS(Sj,Ti,P)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     dHd2dT = nonlinear_eq2.nonlin2_eq_of_state_int_drhodT(Ti,P)*(-9.81/1024.)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
     dHd2dS = nonlinear_eq2.nonlin2_eq_of_state_int_drhodS(Pk)*(-9.81/1024.)
-    np.flush()
+    if climate.is_bohrium:
+        np.flush()
 
 timer.printTime()
 
