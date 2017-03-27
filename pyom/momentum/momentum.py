@@ -1,6 +1,6 @@
 from climate.setup.acc2 import ACC2
 from climate import Timer
-from climate.pyom import momentum, numerics, external, idemix, eke, isoneutral
+from climate.pyom.core import momentum, numerics, external, idemix, eke, isoneutral
 import sys
 
 timer = Timer("momentum")

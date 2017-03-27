@@ -1,6 +1,6 @@
 import climate
-from climate.pyom import PyOM, external, idemix
-from climate.pyom import numerics
+from climate.pyom import PyOM
+from climate.pyom.core import numerics, external, idemix
 from climate.setup.acc2 import ACC2
 import numpy as np
 import sys
@@ -41,7 +41,7 @@ else:
      allocate everything
     """
     a.set_parameter()
-    a.allocate()
+    a._allocate()
 
     """
       Grid
